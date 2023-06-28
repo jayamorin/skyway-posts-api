@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  main:
+    build:
+      context: .
+      target: develop
+    command: >
+      sh -c 'python app/manage.py migrate &&
+        python app/manage.py runserver 0.0.0.0:8000'
+    ports:
+    - 8000:8000
+    volumes:
+    - ./src:/srv/app
+    environment:
+      SECRET_KEY: 'hl19#z5u+p1a(7vb3@2**p#8l-gb2s9q_u(=oof(lprm3=3^bt'
+      DEBUG: True
+      DB_NAME: main
+      DB_USERNAME: user
+      DB_PASSWORD: P@ssw0rd
+      DB_HOSTNAME: postgres
+    depends_on:
+    - postgres
+  postgres:
+    image: postgres:15.3-alpine3.18
+    restart: always
+    environment:
+      POSTGRES_DB: main
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: P@ssw0rd
+    volumes:
+    - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
